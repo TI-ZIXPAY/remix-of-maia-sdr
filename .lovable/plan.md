@@ -1,34 +1,57 @@
 
 
-## Problema
+# Correção das Credenciais no Plano
 
-O menu sidebar abre corretamente no mobile (screenshot 1), mas ao selecionar uma opção e fechar o menu, a tela fica vazia (screenshot 2). O conteúdo existe mas não aparece.
+O plano anterior usava as credenciais do projeto `stjjrzxumspxhxwfhdeo`. As credenciais corretas são:
 
-A cadeia de containers é:
-```text
-<main> flex-1 min-h-0 overflow-hidden flex-col
-  └─ <div> flex-1 min-h-0          ← sem overflow-y-auto!
-       └─ <Outlet> (Reports etc.)  ← h-full overflow-y-auto
-```
+## Credenciais Corrigidas
 
-O problema: o `<div>` wrapper do Outlet tem `min-h-0` (correto para flex) mas **não tem overflow definido**. Combinado com `overflow-hidden` no `<main>`, o conteúdo fica preso sem poder rolar nem aparecer.
+- **Project URL:** `https://feuxwdincoeecyjniwvm.supabase.co`
+- **Project Ref:** `feuxwdincoeecyjniwvm`
+- **Anon Key:** `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZldXh3ZGluY29lZWN5am5pd3ZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5OTI1NDQsImV4cCI6MjA5MDU2ODU0NH0.xe3qmcyHqT8cCvQ0wQsS5Kj11ki3d2SkaFZnaNbAgvU`
 
-## Correção
+## Plano Atualizado — MAIA SDR em Novo Projeto Lovable (sem Cloud)
 
-**`src/App.tsx`** — Adicionar `overflow-y-auto` ao wrapper do Outlet:
+### Passo 1 — Criar novo projeto Lovable SEM Cloud
 
-```tsx
-// Linha 52 — de:
-<div className="flex-1 min-h-0 w-full relative">
+1. Vá em **Settings → Connectors → Lovable Cloud → Disable Cloud**
+2. Crie um **novo projeto vazio** no Lovable
+3. Confirme que o novo projeto **não tem** Lovable Cloud ativo
 
-// Para:
-<div className="flex-1 min-h-0 w-full relative overflow-y-auto">
-```
+### Passo 2 — Conectar seu Supabase externo
 
-Isso permite que o conteúdo role dentro do espaço disponível, tanto no mobile quanto no desktop.
+No novo projeto, vá em **Settings → Connectors → Supabase** e insira:
 
-## Detalhes técnicos
-- O `overflow-hidden` no `<main>` impede que o conteúdo "vaze" para fora do layout
-- O `overflow-y-auto` no wrapper interno cria a área de scroll correta
-- As páginas que já têm `h-full overflow-y-auto` (como Reports) continuarão funcionando normalmente
+- **Project URL:** `https://feuxwdincoeecyjniwvm.supabase.co`
+- **Anon Key:** `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZldXh3ZGluY29lZWN5am5pd3ZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5OTI1NDQsImV4cCI6MjA5MDU2ODU0NH0.xe3qmcyHqT8cCvQ0wQsS5Kj11ki3d2SkaFZnaNbAgvU`
+
+### Passo 3 — Preparar o banco Supabase
+
+No Supabase Dashboard (`https://supabase.com/dashboard/project/feuxwdincoeecyjniwvm`):
+
+1. Execute as migrations SQL (tabelas, funções, triggers, enums, RLS policies)
+2. Configure os secrets em Edge Functions → Secrets:
+   - `LOVABLE_API_KEY`
+   - `CALENDLY_API_TOKEN`
+   - `WEBHOOK_SIGNING_SECRET`
+   - `DISPATCH_CRON_BEARER`
+3. Crie o storage bucket `audio-messages` (público)
+4. Deploy as Edge Functions via Supabase CLI
+
+### Passo 4 — Migrar o código
+
+No novo projeto, peça para eu:
+1. Copiar todo o frontend (componentes, hooks, services, types, pages)
+2. Copiar todas as Edge Functions
+3. Fornecer os scripts SQL completos para o banco limpo
+
+### Importante
+
+- Edge Functions precisam ser deployadas via **Supabase CLI** (`supabase functions deploy`)
+- O `.env` será configurado automaticamente pelo conector
+- O banco começará limpo — dados do Cloud atual não são migrados
+
+### Próximo passo
+
+Após criar o novo projeto e conectar o Supabase, volte e peça para **"reconstruir o MAIA SDR no novo projeto"**.
 
